@@ -2,7 +2,9 @@ package drawing_board;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
+//按钮类
 public class MyButtons extends Container{
     String[] sButtons = {"Line","Circle","Rectangle","Triangle","Characters"};
     JButton[] buttons;
@@ -16,6 +18,11 @@ public class MyButtons extends Container{
             this.buttons[i] = new JButton(sButtons[i]);
             this.add(buttons[i]);
         }
+
+    }
+
+    protected ActionListener bindActionListener(String sButton)
+    {
 
     }
 }

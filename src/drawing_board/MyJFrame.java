@@ -33,7 +33,8 @@ public class MyJFrame extends JFrame {
 //添加画板
     private void addPanel() {
         panel = new MyPanel();
-        this.add(BorderLayout.WEST,panel);
+        //java 1.6以上支持直接添加组件（默认添加在ContentPane），不需要getContentPane之后再在ContentPane上面添加
+        this.add(BorderLayout.CENTER,panel);
     }
 //添加按钮
     private void addJButtons() {
