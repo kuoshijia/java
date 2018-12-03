@@ -4,37 +4,49 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
-//按钮类
+//按钮类 {"Line","Circle","Rectangle","Triangle","Characters"}
 public class MyButtons extends Container{
-    private ArrayList<String, ActionListener> actionsMap;
     public JButton[] buttons;
-    public MyButtons() {
+
+    //类入口初始化
+    MyButtons() {
         //设置自身布局
         this.setLayout(new GridLayout(0,1,100,10));
         //添加按钮
-        this.setActionListenerMap();
-        this.buttons = new JButton[actionsMap.size()];
-        for(Iterator iterator = actionsMap.keySet().iterator())
+        buttons = new JButton[buttonActions.length];
+        for(int i=0; i<buttonActions.length;i++)
         {
-            this.buttons[i] = new JButton(sButtons[i]);
+            String title = (String) buttonActions[i][0];
+            ActionListener actionListener = (ActionListener) buttonActions[i][1];
+            this.buttons[i] = new JButton(title);
+            this.buttons[i].addActionListener(actionListener);
             this.add(buttons[i]);
         }
 
     }
 
-    protected ActionListener setActionListenerMap()
-    {
-        String[] sButtons = {"Line","Circle","Rectangle","Triangle","Characters"};
-        actionsMap = new HashMap<String, ActionListener>();
-        actionsMap.put("Line", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+    //按钮注册
+    private final Object[][] buttonActions = {
+            {"Line",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Line");
+                    System.out.println(Comm.s);
+                    Comm.s = "Line";
+                }
+            }},
+            {"Circle",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Circle");
+                    System.out.println(Comm.s);
+                    Comm.s = "Circle";
 
-            }
-        });
-    }
+                }
+            }},
+    };
+
+
+
 }
