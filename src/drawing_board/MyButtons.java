@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 //按钮类 {"Line","Circle","Rectangle","Triangle","Characters"}
-public class MyButtons extends Container{
+class MyButtons extends Container{
     public JButton[] buttons;
 
     //类入口初始化
@@ -31,18 +31,13 @@ public class MyButtons extends Container{
             {"Line",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Line");
-                    System.out.println(Comm.s);
-                    Comm.s = "Line";
+                    Comm.buttonCommand = btnCmd.Line;
                 }
             }},
             {"Circle",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Circle");
-                    System.out.println(Comm.s);
-                    Comm.s = "Circle";
-
+                    Comm.buttonCommand = btnCmd.Circle;
                 }
             }},
     };

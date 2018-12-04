@@ -5,7 +5,7 @@ package drawing_board;
 import javax.swing.*;
 import java.awt.*;
 //相框类
-public class MyJFrame extends JFrame {
+class MyJFrame extends JFrame {
     //按钮
     public MyButtons buttons;
     //画板
