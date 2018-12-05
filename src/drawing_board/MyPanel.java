@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Line2D;
 
 //提供画图环境的panel，就是画板类
 class MyPanel extends JPanel {
@@ -19,12 +18,12 @@ class MyPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
-        Comm.repaint(g2d);
+        Comm.panelRepaint(g2d);
     }
 
-    //事件处理
+    //事件处理注册
     protected void setEvents() {
-        this.addMouseListener(new MouseListener() {
+        addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
 
@@ -39,9 +38,9 @@ class MyPanel extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-//                Comm.endX = e.getX();
-//                Comm.endY = e.getY();
-//                Comm.panelMouseReleased(MyPanel.this);
+                Comm.endX = e.getX();
+                Comm.endY = e.getY();
+                Comm.panelMouseReleased();
             }
 
             @Override
@@ -54,7 +53,7 @@ class MyPanel extends JPanel {
 
             }
         });
-        this.addMouseMotionListener(new MouseMotionListener() {
+        addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 Comm.endX = e.getX();

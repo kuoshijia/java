@@ -31,13 +31,25 @@ class MyButtons extends Container{
             {"Line",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Comm.buttonCommand = btnCmd.Line;
+                    Comm.cmd = drawCommand.Line;
                 }
             }},
             {"Circle",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Comm.buttonCommand = btnCmd.Circle;
+                    Comm.cmd = drawCommand.Circle;
+                }
+            }},
+            {"Oval",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Comm.cmd = drawCommand.Oval;
+                }
+            }},
+            {"Rectangle",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Comm.cmd = drawCommand.Rectangle;
                 }
             }},
     };
