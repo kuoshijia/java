@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 //按钮类 {"Line","Circle","Rectangle","Triangle","Characters"}
 class MyButtons extends Container{
@@ -50,6 +51,35 @@ class MyButtons extends Container{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Comm.cmd = drawCommand.Rectangle;
+                }
+            }},
+            {"Color",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Comm.color = JColorChooser.showDialog(Comm.panel,"颜色选取器",Color.BLACK);
+                    if (Comm.cmd == drawCommand.Dragged) {
+                        MyShape.backup();
+                        Comm.currentMyShape.color = Comm.color;
+                        Comm.currentMyShape.rebuild();
+                        Comm.panel.repaint();
+                    }
+                }
+            }},
+            {"Clear",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    MyShape.backup();
+                    MyShape.myShapes.clear();
+                    Comm.panel.repaint();
+                }
+            }},
+            {"Undo",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArrayList<MyShape> tmp = MyShape.backupShapes;
+                    MyShape.backupShapes = MyShape.myShapes;
+                    MyShape.myShapes = tmp;
+                    Comm.panel.repaint();
                 }
             }},
     };

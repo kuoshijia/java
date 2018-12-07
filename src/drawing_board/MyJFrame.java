@@ -20,6 +20,7 @@ class MyJFrame extends JFrame {
         this.addJButtons();
         //开始显示画框本身
         this.setVisible(true);
+        panel.requestFocus();
     }
 //自身设置
     private void setSelf()

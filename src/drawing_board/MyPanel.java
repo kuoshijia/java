@@ -2,9 +2,7 @@ package drawing_board;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
 //提供画图环境的panel，就是画板类
 class MyPanel extends JPanel {
@@ -19,6 +17,8 @@ class MyPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         Comm.panelRepaint(g2d);
+        //设置窗体为焦点，以便接收键盘事件
+        requestFocus();
     }
 
     //事件处理注册
@@ -53,6 +53,7 @@ class MyPanel extends JPanel {
 
             }
         });
+
         addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -63,6 +64,23 @@ class MyPanel extends JPanel {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+
+            }
+        });
+
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Comm.keyTyped(e.getKeyChar());
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                //Comm.keyTyped(e.getKeyChar());
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
 
             }
         });

@@ -2,20 +2,17 @@ package drawing_board;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 
 //辅助类，避免一个类文件写得太长而分出来的另一个中间类（静态成员变量用于存储共享数据）
-enum drawCommand {Line,Oval,Circle,Rectangle,Triangle,Characters,Null,Drag};
+enum drawCommand {Line,Oval,Circle,Rectangle,Triangle,Characters,Null, startDragging,Dragging,Dragged};
 enum MouseStatus {Pressed, Dragging,Released};
 class Comm {
     static drawCommand cmd = drawCommand.Null;
     static double startX,startY,endX,endY,oldX1,oldX2,oldY1,oldY2;
 
     static MyShape currentMyShape;
-    //static MyShape myShape;
-    static final ArrayList<MyShape> myShapes = new ArrayList<>();
 
     static Stroke stroke=new BasicStroke();
     static Color color = Color.BLACK;
@@ -33,25 +30,30 @@ class Comm {
         //判断是创建新的图形，还是拖动图形
         switch (cmd) {
             case Null:
+            case Dragged:
                 break;
-            case Drag:
+            case startDragging:
+                MyShape.backup();
+                cmd = drawCommand.Dragging;
+            case Dragging:
                 currentMyShape.x1 = oldX1 + endX - startX;
                 currentMyShape.x2 = oldX2 + endX - startX;
                 currentMyShape.y1 = oldY1 + endY - startY;
                 currentMyShape.y2 = oldY2 + endY - startY;
-                currentMyShape.reBuild();
+                currentMyShape.rebuild();
                 break;
             default: //构建图形
                 MyShape myNewShape = new MyShape(stroke,color,startX,startY,endX,endY,cmd);
                 switch (mouseStatus) {
                     case Pressed: //第一次建
-                        myShapes.add(myNewShape);
+                        MyShape.backup();
+                        MyShape.myShapes.add(myNewShape);
                         currentMyShape = myNewShape;
                         break;
                     case Dragging: //第N次重建
-                        for (int i=myShapes.size()-1; i>=0;i--) {
-                            if (myShapes.get(i) == currentMyShape) {
-                                myShapes.set(i, myNewShape);
+                        for (int i = MyShape.myShapes.size()-1; i>=0; i--) {
+                            if (MyShape.myShapes.get(i) == currentMyShape) {
+                                MyShape.myShapes.set(i, myNewShape);
                                 currentMyShape = myNewShape;
                                 break;
                             }
@@ -67,19 +69,22 @@ class Comm {
     static void panelMousePressed() {
         mouseStatus = MouseStatus.Pressed;
         switch (cmd) {
+            case Dragged:
             case Null: {
                 //说明没有点击按钮,看一下要不要选中图形，以供日后拖动
-                for (int i=myShapes.size()-1; i>=0; i--) {
-                    MyShape tmp = myShapes.get(i);
-                    if (tmp.shape.contains(startX,startY)) {
+                for (int i = MyShape.myShapes.size()-1; i>=0; i--) {
+                    MyShape tmp = MyShape.myShapes.get(i);
+                    if (tmp.shape.intersects(startX,startY,10,10)) {
                         currentMyShape = tmp;
+                        MyShape.myShapes.remove(i);
+                        MyShape.myShapes.add(tmp);
                         //保存图形的旧位置
                         oldX1 = tmp.x1;
                         oldX2 = tmp.x2;
                         oldY1 = tmp.y1;
                         oldY2 = tmp.y2;
                         //设置命令为拖动
-                        cmd = drawCommand.Drag;
+                        cmd = drawCommand.startDragging;
                         //及时退出，只选择一个对象
                         break;
                     }
@@ -93,11 +98,17 @@ class Comm {
         //为了测试设定的入口
         panelMouseDragged();
         mouseStatus = MouseStatus.Released;
-        cmd = drawCommand.Null;
+        switch (cmd) {
+            case Dragging:
+                cmd = drawCommand.Dragged;
+                break;
+            default:
+                cmd = drawCommand.Null;
+        }
     }
 
     static void panelRepaint(Graphics2D g2d) {
-        Iterator<MyShape> iterator = myShapes.iterator();
+        Iterator<MyShape> iterator = MyShape.myShapes.iterator();
         while(iterator.hasNext() && g2d != null) {
             MyShape next = iterator.next();
             g2d.setStroke(next.stroke);
@@ -107,6 +118,23 @@ class Comm {
         }
     }
 
+    static void keyTyped(char key) {
+        if (currentMyShape != null) {
+            switch (key) {
+                case '-':
+                    if(currentMyShape.strokeWidth>1) {
+                        currentMyShape.strokeWidth--;
+                        currentMyShape.rebuild();
+                    }
+                    break;
+                case '+':
+                    currentMyShape.strokeWidth++;
+                    currentMyShape.rebuild();
+                    break;
+            }
+            panel.repaint();
+        }
+    }
 
 
 }
