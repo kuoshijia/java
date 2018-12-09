@@ -40,7 +40,7 @@ class Comm {
                 currentMyShape.x2 = oldX2 + endX - startX;
                 currentMyShape.y1 = oldY1 + endY - startY;
                 currentMyShape.y2 = oldY2 + endY - startY;
-                currentMyShape.rebuild();
+                currentMyShape.buildShape();
                 break;
             default: //构建图形
                 MyShape myNewShape = new MyShape(stroke,color,startX,startY,endX,endY,cmd);
@@ -124,12 +124,12 @@ class Comm {
                 case '-':
                     if(currentMyShape.strokeWidth>1) {
                         currentMyShape.strokeWidth--;
-                        currentMyShape.rebuild();
+                        currentMyShape.buildShape();
                     }
                     break;
                 case '+':
                     currentMyShape.strokeWidth++;
-                    currentMyShape.rebuild();
+                    currentMyShape.buildShape();
                     break;
             }
             panel.repaint();

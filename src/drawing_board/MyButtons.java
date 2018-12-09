@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.ArrayList;
 
 //按钮类 {"Line","Circle","Rectangle","Triangle","Characters"}
@@ -60,7 +61,7 @@ class MyButtons extends Container{
                     if (Comm.cmd == drawCommand.Dragged) {
                         MyShape.backup();
                         Comm.currentMyShape.color = Comm.color;
-                        Comm.currentMyShape.rebuild();
+                        Comm.currentMyShape.buildShape();
                         Comm.panel.repaint();
                     }
                 }
@@ -82,10 +83,45 @@ class MyButtons extends Container{
                     Comm.panel.repaint();
                 }
             }},
+            {"Open",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFileChooser jfc = new JFileChooser();
+                    int option = jfc.showOpenDialog(null);
+                    if (option == JFileChooser.APPROVE_OPTION) {
+                        try {
+                            File file = jfc.getSelectedFile();
+                            FileInputStream fis = new FileInputStream(file);
+                            ObjectInputStream ois = new ObjectInputStream(fis);
+                            Comm.currentMyShape = (MyShape) ois.readObject();
+                            ois.close();
+                            fis.close();
+                        } catch (IOException |ClassNotFoundException err) {
+                            err.printStackTrace();
+                        }
+                    }
+                }
+            }},
             {"Save",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    JFileChooser jfc = new JFileChooser();
+                    int option = jfc.showSaveDialog(null);
+                    if (option == JFileChooser.APPROVE_OPTION) {
+                        try {
+                            File file = jfc.getSelectedFile();
+                            FileOutputStream fos = new FileOutputStream(file);
+                            ObjectOutputStream oos = new ObjectOutputStream(fos);
+                            oos.writeObject(Comm.currentMyShape);
+                            oos.close();
+                            fos.close();
+                        } catch (FileNotFoundException err) {
+                            err.printStackTrace();
+                        } catch (IOException err2) {
+                            err2.printStackTrace();
+                        }
 
+                    }
                 }
             }},
     };

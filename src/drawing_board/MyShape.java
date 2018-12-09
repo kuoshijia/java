@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class MyShape  implements Cloneable, Serializable {
     static ArrayList<MyShape> myShapes = new ArrayList<>();
     static ArrayList<MyShape> backupShapes = new ArrayList<>();
-    Shape shape;
+    transient Shape shape;
     Stroke stroke;
     Color color;
     double x1,y1,x2,y2;
@@ -26,7 +26,7 @@ public class MyShape  implements Cloneable, Serializable {
         this.x2 = x2;
         this.y2 = y2;
         this.type = type;
-        rebuild();
+        buildShape();
     }
     static void backup() {
         backupShapes = (ArrayList<MyShape>) myShapes.clone();
@@ -39,7 +39,7 @@ public class MyShape  implements Cloneable, Serializable {
             }
         }
     }
-    void rebuild() {
+    void buildShape() {
         stroke = new BasicStroke(strokeWidth);
         switch (type) {
             case Line:
