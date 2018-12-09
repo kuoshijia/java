@@ -4,9 +4,10 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MyShape  {
+public class MyShape  implements Cloneable, Serializable {
     static ArrayList<MyShape> myShapes = new ArrayList<>();
     static ArrayList<MyShape> backupShapes = new ArrayList<>();
     Shape shape;

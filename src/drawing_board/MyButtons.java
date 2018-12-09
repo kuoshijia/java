@@ -82,6 +82,12 @@ class MyButtons extends Container{
                     Comm.panel.repaint();
                 }
             }},
+            {"Save",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            }},
     };
 
 
