@@ -4,14 +4,14 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 
 public class MyShape  implements Cloneable, Serializable {
     static ArrayList<MyShape> myShapes = new ArrayList<>();
     static ArrayList<MyShape> backupShapes = new ArrayList<>();
     transient Shape shape;
-    Stroke stroke;
+    transient Stroke stroke;
     Color color;
     double x1,y1,x2,y2;
     drawCommand type;
@@ -73,5 +73,64 @@ public class MyShape  implements Cloneable, Serializable {
         if (o==null)
             throw new CloneNotSupportedException();
         return o;
+    }
+
+    protected byte[] toBytes() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.flush();
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return baos.toByteArray();
+    }
+
+    public static byte[] MyShapeArray2Bytes() {
+        byte[][] a = new byte[myShapes.size()][];
+        for (int i=0;i<myShapes.size();i++) {
+            a[i] = myShapes.get(i).toBytes();
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject((byte)myShapes.size());
+            oos.writeObject(a);
+            oos.flush();
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return baos.toByteArray();
+    }
+
+    protected static MyShape Bytes2Object(byte[] bytes) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        MyShape a;
+        try {
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            a = (MyShape) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return a;
+    }
+
+    public static void restoreFromBytes(byte[] bytes) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        try {
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            int a = ois.readInt();
+            myShapes = new ArrayList<>();
+            for (int i=0;i<a;i++) {
+                myShapes.set(i,(MyShape) ois.readObject());
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

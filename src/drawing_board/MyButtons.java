@@ -83,7 +83,7 @@ class MyButtons extends Container{
                     Comm.panel.repaint();
                 }
             }},
-            {"Open",new ActionListener() {
+            {"Load",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser jfc = new JFileChooser();
@@ -93,7 +93,8 @@ class MyButtons extends Container{
                             File file = jfc.getSelectedFile();
                             FileInputStream fis = new FileInputStream(file);
                             ObjectInputStream ois = new ObjectInputStream(fis);
-                            Comm.currentMyShape = (MyShape) ois.readObject();
+                            byte[] bytes = (byte[]) ois.readObject();
+                            MyShape.restoreFromBytes(bytes);
                             ois.close();
                             fis.close();
                         } catch (IOException |ClassNotFoundException err) {
@@ -112,13 +113,11 @@ class MyButtons extends Container{
                             File file = jfc.getSelectedFile();
                             FileOutputStream fos = new FileOutputStream(file);
                             ObjectOutputStream oos = new ObjectOutputStream(fos);
-                            oos.writeObject(Comm.currentMyShape);
+                            oos.writeObject(MyShape.MyShapeArray2Bytes());
                             oos.close();
                             fos.close();
-                        } catch (FileNotFoundException err) {
+                        } catch (IOException err) {
                             err.printStackTrace();
-                        } catch (IOException err2) {
-                            err2.printStackTrace();
                         }
 
                     }
