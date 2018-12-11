@@ -1,6 +1,11 @@
 package drawing_board;
 
+import drawing_board.shapes.Triangle;
+
+import javax.swing.*;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
@@ -16,6 +21,8 @@ public class MyShape  implements Cloneable, Serializable {
     double x1,y1,x2,y2;
     drawCommand type;
     float strokeWidth = 1;
+    String text;
+    Graphics2D g2d;
 
 
     public MyShape(Stroke stroke, Color color, double x1, double y1, double x2, double y2, drawCommand type) {
@@ -26,8 +33,19 @@ public class MyShape  implements Cloneable, Serializable {
         this.x2 = x2;
         this.y2 = y2;
         this.type = type;
-        buildShape();
+        rebuild();
     }
+
+    public MyShape(Stroke stroke, Color color, double x1, double y1, drawCommand type, String text) {
+        this.stroke = stroke;
+        this.color = color;
+        this.x1 = x1;
+        this.y1 = y1;
+        this.type = type;
+        this.text = text;
+        rebuild();
+    }
+
     static void backup() {
         backupShapes = (ArrayList<MyShape>) myShapes.clone();
         for (int i=0;i<backupShapes.size();i++) {
@@ -39,7 +57,7 @@ public class MyShape  implements Cloneable, Serializable {
             }
         }
     }
-    void buildShape() {
+    void rebuild() {
         stroke = new BasicStroke(strokeWidth);
         switch (type) {
             case Line:
@@ -64,6 +82,18 @@ public class MyShape  implements Cloneable, Serializable {
                 shape = new Rectangle2D.Double(Math.min(x1, x2), Math.min(y1, y2),
                         Math.abs(x2 - x1), Math.abs(y2 - y1));
                 break;
+            case Characters:
+                if (g2d != null) {
+                    Font f = new Font("Helvetica",1,60);
+                    FontRenderContext frc = g2d.getFontRenderContext();
+                    TextLayout tl = new TextLayout(text,f,frc);
+                    shape = tl.getOutline(null);
+                }
+                break;
+            case Triangle:
+                shape = new Triangle();
+                myShapes.remove(this);
+                break;
         }
     }
 
@@ -75,62 +105,4 @@ public class MyShape  implements Cloneable, Serializable {
         return o;
     }
 
-    protected byte[] toBytes() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(this);
-            oos.flush();
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return baos.toByteArray();
-    }
-
-    public static byte[] MyShapeArray2Bytes() {
-        byte[][] a = new byte[myShapes.size()][];
-        for (int i=0;i<myShapes.size();i++) {
-            a[i] = myShapes.get(i).toBytes();
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject((byte)myShapes.size());
-            oos.writeObject(a);
-            oos.flush();
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return baos.toByteArray();
-    }
-
-    protected static MyShape Bytes2Object(byte[] bytes) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        MyShape a;
-        try {
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            a = (MyShape) ois.readObject();
-            ois.close();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return a;
-    }
-
-    public static void restoreFromBytes(byte[] bytes) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        try {
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            int a = ois.readInt();
-            myShapes = new ArrayList<>();
-            for (int i=0;i<a;i++) {
-                myShapes.set(i,(MyShape) ois.readObject());
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 }

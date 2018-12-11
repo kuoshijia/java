@@ -2,6 +2,7 @@ package drawing_board;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 
 
@@ -20,6 +21,8 @@ class Comm {
     static JPanel panel;
 
     static MouseStatus mouseStatus = MouseStatus.Released;
+
+    static String text = "";
 
 
 //    static void panelMouseReleased(JPanel panel) {
@@ -40,7 +43,7 @@ class Comm {
                 currentMyShape.x2 = oldX2 + endX - startX;
                 currentMyShape.y1 = oldY1 + endY - startY;
                 currentMyShape.y2 = oldY2 + endY - startY;
-                currentMyShape.buildShape();
+                currentMyShape.rebuild();
                 break;
             default: //构建图形
                 MyShape myNewShape = new MyShape(stroke,color,startX,startY,endX,endY,cmd);
@@ -91,6 +94,17 @@ class Comm {
                 }
                 break;
             }
+            case Characters:
+                String input = JOptionPane.showInputDialog("请输入要显示的文本！");
+                if (input.length()>0) {
+                    MyShape myNewShape = new MyShape(new BasicStroke(), color, startX, startY, cmd, input);
+                    MyShape.backup();
+                    MyShape.myShapes.add(myNewShape);
+                    panel.repaint();
+                    cmd = drawCommand.Null;
+                }
+                    break;
+
         }
     }
 
@@ -111,6 +125,13 @@ class Comm {
         Iterator<MyShape> iterator = MyShape.myShapes.iterator();
         while(iterator.hasNext() && g2d != null) {
             MyShape next = iterator.next();
+            AffineTransform x = new AffineTransform();
+            if (next.type == drawCommand.Characters) {
+                next.g2d = g2d;
+                next.rebuild();
+                x.translate(next.x1,next.y1);
+            }
+            g2d.setTransform(x);
             g2d.setStroke(next.stroke);
             g2d.setColor(next.color);
             //g2d.translate(next.offsetX,next.offsetY);
@@ -124,12 +145,12 @@ class Comm {
                 case '-':
                     if(currentMyShape.strokeWidth>1) {
                         currentMyShape.strokeWidth--;
-                        currentMyShape.buildShape();
+                        currentMyShape.rebuild();
                     }
                     break;
                 case '+':
                     currentMyShape.strokeWidth++;
-                    currentMyShape.buildShape();
+                    currentMyShape.rebuild();
                     break;
             }
             panel.repaint();

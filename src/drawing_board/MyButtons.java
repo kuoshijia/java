@@ -54,6 +54,12 @@ class MyButtons extends Container{
                     Comm.cmd = drawCommand.Rectangle;
                 }
             }},
+            {"Triangle",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Comm.cmd = drawCommand.Triangle;
+                }
+            }},
             {"Color",new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -61,7 +67,7 @@ class MyButtons extends Container{
                     if (Comm.cmd == drawCommand.Dragged) {
                         MyShape.backup();
                         Comm.currentMyShape.color = Comm.color;
-                        Comm.currentMyShape.buildShape();
+                        Comm.currentMyShape.rebuild();
                         Comm.panel.repaint();
                     }
                 }
@@ -93,10 +99,21 @@ class MyButtons extends Container{
                             File file = jfc.getSelectedFile();
                             FileInputStream fis = new FileInputStream(file);
                             ObjectInputStream ois = new ObjectInputStream(fis);
-                            byte[] bytes = (byte[]) ois.readObject();
-                            MyShape.restoreFromBytes(bytes);
-                            ois.close();
-                            fis.close();
+                            MyShape.backup();
+                            MyShape.myShapes = new ArrayList<>();
+                            MyShape tmp;
+                            try {
+                                while (true) {
+                                    tmp = (MyShape) ois.readObject();
+                                    tmp.rebuild();
+                                    MyShape.myShapes.add(tmp);
+                                }
+                            } catch (EOFException err) {
+                                Comm.panel.repaint();
+                            } finally {
+                                ois.close();
+                                fis.close();
+                            }
                         } catch (IOException |ClassNotFoundException err) {
                             err.printStackTrace();
                         }
@@ -113,7 +130,10 @@ class MyButtons extends Container{
                             File file = jfc.getSelectedFile();
                             FileOutputStream fos = new FileOutputStream(file);
                             ObjectOutputStream oos = new ObjectOutputStream(fos);
-                            oos.writeObject(MyShape.MyShapeArray2Bytes());
+                            for (int i=0;i<MyShape.myShapes.size();i++) {
+                                MyShape o = MyShape.myShapes.get(i);
+                                oos.writeObject(o);
+                            }
                             oos.close();
                             fos.close();
                         } catch (IOException err) {
@@ -121,6 +141,12 @@ class MyButtons extends Container{
                         }
 
                     }
+                }
+            }},
+            {"Characters",new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                        Comm.cmd = drawCommand.Characters;
                 }
             }},
     };
